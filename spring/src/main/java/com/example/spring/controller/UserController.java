@@ -5,6 +5,7 @@ import com.example.spring.dto.CourseSaveRequestDto;
 import com.example.spring.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -12,6 +13,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "${cors.allowed-origins}") // 프론트엔드 포트
+@PreAuthorize("#uid.equals(authentication.principal)")
 public class UserController {
     /**
      * axios랑 연동하면서 문제 없는 것은 확인했는데,...
