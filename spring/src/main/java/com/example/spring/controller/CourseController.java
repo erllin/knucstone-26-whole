@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/courses")
-@CrossOrigin(origins = "${cors.allowed-origins}") // 프론트엔드 포트
 public class CourseController {
 
     private final CourseService courseService;

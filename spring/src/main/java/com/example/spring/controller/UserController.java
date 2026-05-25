@@ -12,7 +12,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "${cors.allowed-origins}") // 프론트엔드 포트
 @PreAuthorize("#uid.equals(authentication.principal)")
 public class UserController {
     /**
