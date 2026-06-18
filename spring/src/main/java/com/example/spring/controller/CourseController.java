@@ -24,20 +24,18 @@ public class CourseController {
     }
 
     // 모든 강의
-    @GetMapping
+    @GetMapping("/majors")
     public ResponseEntity<List<CourseDto>> getMajorCourses() {
         List<CourseDto> courses = courseService.getMajorCourses();
         return ResponseEntity.ok(courses);
     }
 
-    // 특정 강의
-    @GetMapping("/{id}")
-    public ResponseEntity<CourseDto> getCourseById(@PathVariable String id) {
-        CourseDto course = courseService.getCourseById(id);
-
+    @GetMapping("/search/{query}")
+    public ResponseEntity<CourseDto> getCourse(@PathVariable String query) {
+        CourseDto course = courseService.getCourseByIdOrName(query);
         if (course == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();   // 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(course);     // 200
+        return ResponseEntity.ok(course);
     }
 }

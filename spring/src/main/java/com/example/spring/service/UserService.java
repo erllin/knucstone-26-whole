@@ -78,6 +78,21 @@ public class UserService {
         return dto;
     }
 
+    public void saveAiReport(String uid, Map<String, Object> reportMap) {
+        try {
+            Map<String, Object> reportData = Map.of(
+                    "lastAiAnalyzed", FieldValue.serverTimestamp(),
+                    "lastAiReport", reportMap
+            );
+
+            firestore.collection("users").document(uid).set(reportData, SetOptions.merge());
+            System.out.println(uid + " 리포트, 타임스탬프 저장 완료");
+
+        } catch (Exception e) {
+            System.err.println("AI 리포트 저장 실패: " + e.getMessage());
+        }
+    }
+
     // 학기 변경 및 하위 수강이력 일괄 업데이트 (네트워크 조회 분리)
     public void updateSemesterTaken(String uid, String semId, String takenOld, String takenNew) throws Exception {
         // 배치 생성 전에 변경 대상(이수이력)을 먼저 조회(GET)하여 대기 시간 최소화

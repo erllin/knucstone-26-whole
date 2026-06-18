@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,8 +40,13 @@ public class AiService {
     }
 
     public AiResponseDto getAcademicConsultingReport(String uid, String creditTableDocId) throws Exception {
-        // 캐싱해놓은 데이터들을 가져옵니다.
         UserCombinedDto userCombinedData = userService.getUserCombinedData(uid);
+        Map<String, Object> userProfile = (Map<String, Object>) userCombinedData.getUserProfile();
+
+        // AI 시간 제한 -> 기존 리포트 반환
+        AiResponseDto lastAiReport = validAiCooldown(userProfile, 180);
+        if (lastAiReport != null) { return lastAiReport; }
+
         Map<String, Object> matchedCreditTable = creditTableService.getUserMatchedCreditTable(uid, creditTableDocId);
         List<TrackDto> tracks = trackService.getTracks();
         List<CourseDto> availableCourses = courseService.getMajorCourses();
@@ -108,7 +115,6 @@ public class AiService {
                 .collect(Collectors.toSet());
 
         // 추가 필터링. (다음 학기만, 전선만 남기기 => 입력 토큰과 연산의 최소화. 전필은 필수이므로 연산보다는 프론트에 표시만 해두는 것이?)
-        Map<String, Object> userProfile = (Map<String, Object>) userCombinedData.getUserProfile();
         int regularTerm = Integer.parseInt(userProfile.get("regularTerm").toString());
 
         List<CourseDto> filteredCourses = Optional.ofNullable(availableCourses)
@@ -134,13 +140,10 @@ public class AiService {
                     else if (regularTerm == 4)  { targetYearPrefix = "3/"; targetSemesterSuffix = "2학기"; }
                     else if (regularTerm == 5)  { targetYearPrefix = "4/"; targetSemesterSuffix = "1학기"; }
                     else if (regularTerm == 6)  { targetYearPrefix = "4/"; targetSemesterSuffix = "2학기"; }
-                    else { return false; // 졸업 유예자(또는 예외케이스)는 추천 과목 X
-                    }
+                    else { return false; }
 
                     // 학년 일치하는지?
-                    if (!ys.startsWith(targetYearPrefix)) {
-                        return false;
-                    }
+                    if (!ys.startsWith(targetYearPrefix)) { return false; }
 
                     // 학기를 만족하거나 '전학기'인 과목만 남김
                     return ys.endsWith(targetSemesterSuffix) || ys.endsWith("전학기");
@@ -194,7 +197,7 @@ public class AiService {
             response = chatModel.call(primaryPrompt);
         } catch (Exception e) {
             // 한도 초과 에러 발생하면 이쪽으로 넘어옴.
-            System.out.println("1차 한도 초과...");
+            System.out.println("1차 한도 초과... 원인: " + e.getMessage());
             // 모델 설정 변수 (Gemini-2.5-flash)
             GoogleGenAiChatOptions fallbackOptions = GoogleGenAiChatOptions.builder()
                     .model("gemini-2.5-flash").temperature(0.0).responseMimeType("application/json").build();
@@ -205,6 +208,7 @@ public class AiService {
                 response = chatModel.call(fallbackPrompt);
             } catch (Exception fallE) {
                 // 아야...
+                System.out.println("2차 예외 발생... 원인: " + fallE.getMessage());
                 System.out.println("저런, 목업이나 뱉어야겠어요...");
                 return getMockupReport();
             }
@@ -217,17 +221,57 @@ public class AiService {
             throw new RuntimeException("AI로부터 올바른 응답 데이터를 수신하지 못했습니다.");
         }
 
-        // 역직렬화 가드라인 설정 후 즉시 자바 Record DTO로 변환
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        AiResponseDto responseDto;
         try {
-            responseDto = objectMapper.readValue(responseText.trim(), AiResponseDto.class);
+            AiResponseDto responseDto = objectMapper.readerFor(AiResponseDto.class)
+                    .with(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                    .readValue(responseText.trim());
+            Map<String, Object> reportMap = objectMapper.convertValue(responseDto, Map.class);
+            userService.saveAiReport(uid, reportMap);
+
+            return responseDto;
         } catch (Exception e) {
             throw new RuntimeException("Gemini JSON 바인딩 오류 발생. 원인: " + e.getMessage(), e);
         }
+    }
 
-        return responseDto;
+    // 분석 시간 제한
+    private AiResponseDto validAiCooldown(Map<String, Object> userProfile, long mins) {
+        if (userProfile == null || !userProfile.containsKey("lastAiAnalyzed")) {
+            return null;
+        }
+
+        try {
+            Object timestampObj = userProfile.get("lastAiAnalyzed");
+            Instant lastAnalyzed = null;
+
+            if (timestampObj instanceof com.google.cloud.Timestamp) {
+                lastAnalyzed = ((com.google.cloud.Timestamp) timestampObj).toSqlTimestamp().toInstant();
+            } else if (timestampObj instanceof Map) {
+                Map<?, ?> tsMap = (Map<?, ?>) timestampObj;
+                if (tsMap.containsKey("seconds")) {
+                    long seconds = Long.parseLong(tsMap.get("seconds").toString());
+                    lastAnalyzed = Instant.ofEpochSecond(seconds);
+                }
+            }
+
+            if (lastAnalyzed == null) { return null; }
+
+            Instant now = Instant.now();
+            long secondsElapsed = Duration.between(lastAnalyzed, now).toSeconds();
+            long cooldownSeconds = mins * 60;
+
+            if (secondsElapsed < cooldownSeconds) {
+                if (userProfile.containsKey("lastAiReport") && userProfile.get("lastAiReport") != null) {
+                    Object lastAiReport = userProfile.get("lastAiReport");
+                    System.out.println("AI 시간 제한내 요청, 기존 리포트를 반환");
+                    return objectMapper.convertValue(lastAiReport, AiResponseDto.class);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("AI 제한 연산 중 예외: " + e.getMessage());
+        }
+
+        return null;
     }
 
     // 프롬프트 텍스트 가져오기

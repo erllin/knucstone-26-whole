@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.spring.dto.CourseDto;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -104,7 +101,7 @@ public class CourseService {
         }
     }
 
-    // 모든 Course 가져오기
+    // 모든 전공 Course 가져오기
     public List<CourseDto> getMajorCourses()  {
         return majorCoursesListCache;
     }
@@ -117,5 +114,26 @@ public class CourseService {
         } else {
             return generalCourseMapCache.get(id);
         }
+    }
+
+    public CourseDto getCourseByIdOrName(String query) {
+        if (query == null || query.trim().isEmpty()) { return null; }
+        String trimQuery = query.trim();
+
+        CourseDto courseDto = getCourseById(trimQuery);
+        if (courseDto != null) {
+            return courseDto;
+        }
+
+        Optional<CourseDto> foundInMajor = majorCourseMapCache.values().stream()
+                .filter(c -> c.getName() != null && c.getName().trim().equals(trimQuery))
+                .findFirst();
+        if (foundInMajor.isPresent()) { return foundInMajor.get(); }
+
+        Optional<CourseDto> foundInGeneral = generalCourseMapCache.values().stream()
+                .filter(c -> c.getName() != null && c.getName().trim().equals(trimQuery))
+                .findFirst();
+
+        return foundInGeneral.orElse(null);
     }
 }
