@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 // CSS
-import './App.css'
-import './Global.css'
+import './App.css';
+import './global.css';
 // ContextProvider
 import { UserProvider, useUser } from './components/UserProvider';
 // Setup
@@ -17,7 +17,6 @@ import BottomNav from './components/BottomNav';
 const RootRouter = () => {
   const { user, userProfile, loading } = useUser();
 
-  // 1. Firebase 인증 상태 확인 중일 때
   if (loading) {
     return <div className="loading-screen">데이터를 불러오는 중입니다...</div>;
   }

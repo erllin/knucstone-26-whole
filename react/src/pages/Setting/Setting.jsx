@@ -1,7 +1,7 @@
 import React from "react";
 import { logout } from "../../firebase";
 // CSS 임포트
-import "../../components/skins/options.css";
+import "../../global.css";
 import "./Setting.css";
 
 const Setting = () =>  {

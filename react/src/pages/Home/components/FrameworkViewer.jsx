@@ -3,6 +3,7 @@ import { useUser } from "../../../components/UserProvider";
 
 import "./FrameworkViewer.css";
 import "../Home.css";
+import "../../../global.css";
 
 const FrameworkViewer = () => {
     // Track을 useUser 컨텍스트 통해 가져옴.
@@ -29,7 +30,7 @@ const FrameworkViewer = () => {
     }
 
     return (
-        <div className="framework con-theme border-r">
+        <div className="framework dfx-col br-20 con-theme">
             <h2>프레임워크</h2>
             <div className="fr-title border-r">
                 <div className="fr-title-select">
@@ -48,8 +49,8 @@ const FrameworkViewer = () => {
             </div>
 
             {/* 교과목 리스트 */}
-            <div className="fr-cslist border-r">
-                <div className="subject-list">
+            <div className="fr-cslist br-20">
+                <div className="subject-list dfx-col">
                     {currentTrack.subjects?.map((subject) => (
                         <div key={subject.id} className="subject-item">
                             <span className="sub-id">{subject.id}</span>
@@ -61,17 +62,17 @@ const FrameworkViewer = () => {
             </div>
 
             {/* 이수 목표 */}
-            <div className="fr-goal border-r">
+            <div className="fr-goal br-20">
                 <h3 className="section-title">이수 목표</h3>
                 <p>{currentTrack.completionGoal}</p>
             </div>
 
             {/* 직업 */}
-            <div className="fr-job border-r">
+            <div className="fr-job br-20">
                 <h3 className="section-title">관련 직업</h3>
                 <div className="job-list">
                     {currentTrack.targetOccupations.map((job, index) => (
-                        <span key={index} className="job-tag">{job}</span>
+                        <span key={index} className="job-tag br-10">{job}</span>
                     ))}
                 </div>
             </div>

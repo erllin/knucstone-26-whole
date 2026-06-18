@@ -1,17 +1,5 @@
-:root {
-  --con-theme: #4F5D67;
-  --inner-bg: #3e4951;        /* framework보다 살짝 더 어두운 내부 박스 */
-  --card-bg: #5d6d78;         /* 요소 강조용 (약간 더 밝은) */
-  --border-color: #65747f;    /* 은은한 테두리 */
-  --color-done: #74b9ff;
-  --text-bright: #ffffff;     /* 메인 텍스트 */
-  --text-muted: #c1c9ce;      /* 보조 텍스트 */
-}
-
-/* 메인 프레임워크 박스 */
+/* 1. 컨테이너 */
 .framework {
-  display: flex;
-  flex-direction: column;
   padding: 24px;
   margin-top: 10px;
   margin-bottom: 20px;
@@ -21,10 +9,8 @@
   background-color: var(--con-theme);
   border: 1px solid var(--border-color);
   gap: 16px;
-  border-radius: 20px;
 }
 
-/* 내부 구획 공통 영역 스타일 */
 .fr-title, .fr-cslist, .fr-goal, .fr-job {
   padding: 15px;
   background: var(--inner-bg);
@@ -32,11 +18,6 @@
   border-radius: 12px;
 }
 
-.fr-b {
-  padding: 10px;
-}
-
-/* 섹션 타이틀 (공통) */
 .section-title {
   font-size: 1rem;
   font-weight: bold;
@@ -44,6 +25,7 @@
   margin-bottom: 12px;
   color: var(--text-bright);
 }
+/* 1. */
 
 .fr-title-select select {
   width: 100%;
@@ -62,8 +44,6 @@
 }
 
 .subject-list {
-  display: flex;
-  flex-direction: column;
   gap: 8px; /* 과목 행 사이의 간격 */
 }
 
@@ -103,19 +83,6 @@
   flex-shrink: 0;
 }
 
-/* 이수 목표 본문 */
-.goal-text {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: var(--text-bright);
-  margin: 0;
-}
-
-/* --- 관련 직업 섹션 완전 가운데 정렬 스타일 --- */
-.center-title {
-  text-align: center;
-}
-
 .job-list {
   display: flex;
   flex-wrap: wrap;
@@ -130,5 +97,4 @@
   background: var(--card-bg);
   color: var(--text-bright);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
 }

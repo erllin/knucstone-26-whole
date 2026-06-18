@@ -2,14 +2,138 @@
   --main-theme: #1A2227;
   --sub-theme: #36454F;
   --con-theme: #4F5D67;
+
+  --inner-bg: #3E4951;
+  --card-bg: #5D6D78;
+  --border-color: #65747F;
+
   --text-pure: #F0F0F0;
   --text-white: #F5F5F5;
   --text-soft: #F0F8FF;
-  --text-blue: #4169E1
+  --text-bright: #FFFFFF;
+  --text-muted: #C1C9CE;
+
+  --text-blue: #4169E1;
+  --text-green: #28a745;
+  --text-error: #FF6B6B;
+  --color-done: #74B9FF;
   --warning: #FFB84D;
+  --error: #FF4D4F;
   --danger: #E63946;
+
   --btn-acc: #4169E1;
   --btn-acc-hv: #3152B1;
 }
 
+/* 1. 주요 색상 */
+.main-theme {
+  background-color: var(--main-theme); /* Deep Charcoal */
+  color: var(--text-white);
+}
 
+.sub-theme {
+  background: linear-gradient(to bottom, var(--sub-theme), var(--main-theme)); /* 그라데이션 Charcoal */
+  color: var(--text-pure);
+}
+
+.con-theme {
+  background-color: var(--con-theme); /* Light Charcoal */
+  color: var(--text-soft);
+}
+/* 1. */
+
+/* 2. 페이지, 컨테이너 기본 */
+.page {
+  height: 100vh;
+  width: 100%;
+  max-width: 1128px;
+  margin: 0 auto;
+
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.ct {
+  flex: 1;
+  width: 100%;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  overflow-y: auto; /* 원래 overflow: scroll 이었음. */
+}
+
+/* !크롬 전용으로, 스크롤바를 보이지 않게 함. 다른 브라우저 쓰는 경우, 다른 속성 추가해야 할 수도 있음. */
+.ct::-webkit-scrollbar {
+  display: none;
+}
+
+.ct-wrapper {
+  width: 80%;
+  margin: 0 auto;
+  gap: 20px;
+}
+/* 2. */
+.br-25 { border-radius: 25px; }
+.br-20 { border-radius: 20px; }
+.br-15 { border-radius: 15px; }
+.br-10 { border-radius: 10px; }
+.br-5 { border-radius: 5px;}
+
+.dfx-col { display: flex; flex-direction: column;}
+.dfx-row { display: flex; flex-direction: row;}
+
+/* 헤더 부분 */
+.header {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  padding: 20px 0;
+
+  align-items: center;
+}
+
+.header-top {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.header-top .ct-wrapper {
+  display: flex;
+  flex-direction: row;
+  padding: 0 40px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.menu {
+  display: flex;
+  gap: 20px;
+}
+
+/* 학점 종류 색상 */
+.bg-main { background-color: #F1C40F; }
+.bg-major { background-color: #74B9FF; }
+.bg-else { background-color: #FAB1A0; }
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

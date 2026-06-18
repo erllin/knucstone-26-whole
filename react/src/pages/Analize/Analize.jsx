@@ -1,7 +1,7 @@
 import React from "react";
 import { useUser } from "../../components/UserProvider"
 // CSS
-import "../../components/skins/options.css";
+import "../../global.css";
 import "./Analize.css";
 
 const Analize = () => {
@@ -18,7 +18,7 @@ const Analize = () => {
   };
 
   return (
-    <div className="page main-theme">
+    <div className="page dfx-col main-theme">
       <header className="header">
         <div className="header-top">
           <div className="ct-wrapper">
@@ -30,17 +30,17 @@ const Analize = () => {
       
       <main className="ct">
         <div className="ct-wrapper">
-          <div className="analize-course con-theme border-r">
+          <div className="analize-course dfx-col br-20 con-theme">
             <h2 className="section-title">AI 맞춤형 학업 컨설팅 리포트</h2>
             
             {/* 분석 실행 트리거 영역 */}
-            <div className="suggestion-container">
+            <div className="suggestion-container br-15">
               <div className="suggestion-header">
                 <h5>실시간 학사 진단</h5>
                 <button 
                   onClick={handleFetchReport} 
                   disabled={isAiLoading}
-                  className={`btn-analyze ${isAiLoading ? "disabled" : ""}`}
+                  className={`btn-analyze br-10 ${isAiLoading ? "disabled" : ""}`}
                 >
                   {isAiLoading ? 'AI 진단 및 연산 중... (잠시만 기다려주세요.)' : 'AI 진단 및 추천 받기'}
                 </button>
@@ -49,27 +49,25 @@ const Analize = () => {
 
             {/* 에러 발생 시 알림창 */}
             {aiError && (
-              <div className="analize-error">
+              <div className="analize-error br-10">
                 <span>{aiError}</span>
               </div>
             )}
 
-            {/* AI 결과 데이터 바인딩 뷰포트 */}
+            {/* AI 리포트 */}
             {aiReport && (
-              <div className="analize-content">
-                
-                {/* 추천 트랙 섹션 */}
-                <section className="analize-section">
+              <div className="analize-content dfx-col">
+                <section className="analize-section dfx-col br-15">
                   <h3 className="sub-section-title">추천 커리큘럼 트랙</h3>
-                  <div className="track-item">
-                    <span className="tag-rec">주트랙</span> 
-                    <div className="track-info">
+                  <div className="track-item br-10">
+                    <span className="tag-rec br-5">주트랙</span> 
+                    <div className="track-info dfx-col">
                       <span className="name">{aiReport.recommendedTracks.primaryTrack.trackName}</span>
                       <p className="reason">{aiReport.recommendedTracks.primaryTrack.reason}</p>
                     </div>
                   </div>
-                  <div className="track-item">
-                    <span className="tag-sub">부트랙</span> 
+                  <div className="track-item br-10">
+                    <span className="tag-sub br-5">부트랙</span> 
                     <div className="track-info">
                       <span className="name">{aiReport.recommendedTracks.secondaryTrack.trackName}</span>
                       <p className="reason">{aiReport.recommendedTracks.secondaryTrack.reason}</p>
@@ -77,14 +75,13 @@ const Analize = () => {
                   </div>
                 </section>
 
-                {/* 차기 학기 수강 신청 계획 */}
-                <section className="analize-section">
+                <section className="analize-section dfx-col br-15">
                   <h3 className="sub-section-title">다음 학기 추천 수강 과목</h3>
-                  <h5 className="list-group-title">※ AI의 대답에는 오류가 있을 수 있습니다. 전필, 꿈-설계 교과목 등 학과에서 필수로 지정한 과목을 우선하세요.</h5>
+                  <h5 className="list-group-title">※ AI의 대답에는 오류가 있을 수 있습니다.</h5>
                   <div className="suggestion-list">
                     {aiReport.nextSemesterPlan.recommendedCourses.map((course) => (
-                      <div key={course.courseId} className="suggest-item">
-                        <span className="tag-rec">추천</span>
+                      <div key={course.courseId} className="suggest-item br-10">
+                        <span className="tag-rec br-5">추천</span>
                         <div className="suggest-info">
                           <span className="name">{course.courseName}</span>
                           <span className="code-credit">({course.courseId})</span>
@@ -96,7 +93,7 @@ const Analize = () => {
                 </section>
 
                 {/* 트랙 가이드라인 */}
-                <section className="analize-section alert-border">
+                <section className="analize-section alert-border dfx-col br-15">
                   <h3 className="sub-section-title alert-text">트랙 가이드라인</h3>
                   
                   <h5 className="list-group-title">AI 핵심 역량 지침</h5>

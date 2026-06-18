@@ -4,8 +4,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import axios from "axios";
 
 const UserContext = createContext();
-const BASE_URL = "http://localhost:8080/api";   //!사용시, 서버 IP로 변경해야함
-const courseCache = {};
+export const BASE_URL = "http://localhost:8080/api";   //!사용시, 서버 IP로 변경해야함
+export const courseCache = {};
 
 // !기존 localStorage -> Firebase -> Axios 식으로 넘어와서 일부 문제가 있을 수 있음.
 export const UserProvider = ({ children }) => {
@@ -238,19 +238,55 @@ export const UserProvider = ({ children }) => {
         }
     }, [user, getAuthHeader, fetchAllUserData, fetchReqCredit]);
 
-    // fetchCourseInfo: 개별 교과목 정보 검색, courseCache를 이용해 캐싱.
-    const fetchCourseInfo = useCallback(async (courseId) => {
-        const trimCourseId = courseId.trim();
-        if (!trimCourseId) return null;
+    // 학과교과목 목록 로드, 캐싱 (컴퓨터공학과목만)
+    useEffect(() => {
+        if (!user) {
+            return;
+        }
+        const loadMajorCourses = async () => {
+            try {
+                const header = await getAuthHeader();
+                const res = await axios.get(`${BASE_URL}/courses/majors`, header);
 
-        if (courseCache[trimCourseId]) {
-            return courseCache[trimCourseId];
+                if (res.data && Array.isArray(res.data)) {
+                    res.data.forEach((course) => {
+                        const targetId = course.id || course.data?.id;
+                        const targetName = course.name || course.data?.name;
+                        const targetMetadata = course.metadata || course.data?.metadata;
+                        
+                        const mapped = {
+                            courseId: targetId,
+                            courseName: targetName,
+                            category: targetMetadata?.category,
+                            credits: targetMetadata?.credits,
+                            fromDB: true
+                        };
+
+                        courseCache[mapped.courseId] = mapped;
+                        courseCache[mapped.courseName] = mapped;
+                    });
+                }
+            } catch (err) {
+                console.error("전공교과목 로드 실패: ", err);
+            }
+        };
+
+        loadMajorCourses();
+    }, [user, getAuthHeader]);
+
+    // fetchCourseInfo: 개별 교과목 정보 검색, courseCache를 이용해 캐싱.
+    const fetchCourseInfo = useCallback(async (courseQuery) => {
+        const trimCourseQuery = courseQuery.trim();
+        if (!trimCourseQuery) return null;
+
+        if (courseCache[trimCourseQuery]) {
+            return courseCache[trimCourseQuery];
         }
 
         try {
             const header = await getAuthHeader();
             // axios.get(url, config)
-            const res = await axios.get(`${BASE_URL}/courses/${trimCourseId}`, header);
+            const res = await axios.get(`${BASE_URL}/courses/search/${encodeURIComponent(trimCourseQuery)}`, header);
             if (res.data) {
                 const mapped = {
                     courseId: res.data.id,
@@ -259,7 +295,8 @@ export const UserProvider = ({ children }) => {
                     credits: res.data.metadata?.credits,
                     fromDB: true
                 };
-                courseCache[trimCourseId] = mapped;
+                courseCache[mapped.courseId] = mapped;
+                courseCache[mapped.courseName] = mapped;
                 return mapped;
             }
             return null;

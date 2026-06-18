@@ -3,6 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import useStats from "../../../components/useStats";
 
 import "../Home.css";
+import "../../../global.css";
 import "./GpaStats.css"
 import "../../../components/FontAwesome";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,17 +21,17 @@ const GpaEntity = ({ title, score, maximum = 4.5, colorClass }) => {
   const percentage = Math.min((scoreToNum / maximum) * 100, 100);
 
   return (
-    <div className="gpa-item">
-      <span className="gpa-title">{title}</span>
+    <div className="gpa-item dfx-col">
+      <span className="gpa-title br-20">{title}</span>
       
       <div className="gpa-values">
         <span className="gpa-score">{scoreToNum.toFixed(2)}</span>
         <span className="gpa-total-score">/ {maximum}</span>
       </div>
       {/* 프로그레스바-2 */}
-      <div className="gpa-progress-bg">
+      <div className="gpa-prog-bg br-10">
         <div 
-          className={`gpa-progress-fill ${colorClass}`} 
+          className={`gpa-prog-fill br-10 ${colorClass}`} 
           style={{ width: `${percentage}%` }}
         ></div>
       </div>
@@ -68,39 +69,37 @@ const GpaStats = () => {
     };
 
 
-    return (      <>
-        {/* 성적: 전체 성적, 상세 성적으로 나뉨 (추후 JSON에 맞게 처리해야함.) */}
-        <section className="gpa border-r con-theme">
+    return (      
+    <>
+        <section className="gpa dfx-col br-20 con-theme">
             {/* 전체 성적: 항상 보여야 하는 곳. */}
-            <div className="gpa-summary">
-                <GpaEntity title="종합 평점" score={generalStats.gpa.general} colorClass="bg-total" />
+            <div className="gpa-summary dfx-row">
+                <GpaEntity title="종합 평점" score={generalStats.gpa.general} colorClass="bg-main" />
                 <GpaEntity title="전공 평점" score={generalStats.gpa.major} colorClass="bg-major" />
                 <GpaEntity title="전공외 평점" score={generalStats.gpa.other} colorClass="bg-else" />
             </div>
 
             {/* 상세 성적: 버튼을 눌러서 확장해 볼 수 있는 곳.  */}
-            <div className="gpa-expanded-content">
+            <div className="gpa-expanded-content dfx-col">
                 <button 
                     onClick={() => setIsOpen(!isOpen)} 
-                    className={`gpa-toggle-btn ${isOpen ? "active" : ""}`}
+                    className={`gpa-toggle-btn br-25 ${isOpen ? "active" : ""}`}
                 >
                     <FontAwesomeIcon className={`caret-icon ${isOpen ? "rotate-180" : ""}`} icon="caret-down" />
                 </button>
 
                 {isOpen && (
-                <div className="semester-table-wrapper">
+                <div className="semester-tbl-wrapper">
                     {/* 데이터 없을 때 예외 처리할 곳 */}
                     {!hasData ? (
-                        <div className="no-data-message">
+                        <div className="no-data-message dfx-col">
                             <FontAwesomeIcon icon="exclamation-circle" size="2x" />
                             <p>등록된 학기별 성적 데이터가 없습니다.</p>
                         </div>
                     ) : (
                     <>
-                    {/* [개선] 차트 영역을 감싸는 컨테이너 구조 명확화 */}
-                    <div className="chart-container" style={{ width: '100%', height: '300px', marginBottom: '20px' }}>
+                    <div className="chart-ct br-15" style={{ width: '100%', height: '300px', marginBottom: '20px' }}>
                         <h4 className="chart-title">성적 추이</h4>
-                        {/* ResponsiveContainer의 부모(.chart-container)에 고정 높이가 지정되어야 침범하지 않습니다. */}
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={displayData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -128,7 +127,7 @@ const GpaStats = () => {
                     </div>
 
                     {/* 성적 테이블 */}
-                    <table className="semester-table">
+                    <table className="semester-tbl br-15">
                         <thead>
                             <tr>
                             <th>학기</th>

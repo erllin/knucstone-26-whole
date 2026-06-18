@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 // context
-import { useUser } from "../../../components/UserProvider";
+import { useUser, BASE_URL, courseCache } from "../../../components/UserProvider";
 // css
-import "../Class.css"
-import "./CoursePopup.css"
+import "../Class.css";
+import "../../../global.css";
+import "./CoursePopup.css";
 
 const grades = ["A+", "A0", "B+", "B0", "C+", "C0", "D+", "D0", "F", "P", "NP"];
 const categories = ["전필", "전선", "교양", "자선"];
@@ -13,23 +14,68 @@ const termWeight = { "1": 1, "S": 2, "2": 3, "W": 4 };
 // const CourseEntity: 개별 수강 이력에 대한 엔티티.
 const CourseEntity = React.memo(({ course, index, onUpdate, onDelete, grades }) => {
     const [localCourseId, setLocalCourseId] = useState(course.courseId);
+    const [localCourseName, setLocalCourseName] = useState(course.courseName);
+    // 연관검색어용
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
     // course.courseId가 변경되는 경우 동기화 수행.
     useEffect(() => {
         setLocalCourseId(course.courseId);
-    }, [course.courseId]);
+        setLocalCourseName(course.courseName);
+    }, [course.courseId, course.courseName]);
+
+    // 강의명 연관검색어
+    const handleNameChange = (e) => {
+        const val = e.target.value;
+        setLocalCourseName(val);
+
+        if (!val.trim() || !courseCache) {
+            setSuggestions([]);
+            return;
+        }
+
+        const uniqueCourses = [];
+        const seenIds = new Set();
+
+        Object.values(courseCache).forEach(item => {
+            if (item && item.courseId && !seenIds.has(item.courseId)) {
+                seenIds.add(item.courseId);
+                uniqueCourses.push(item);
+            }
+        });
+
+        // 검색어 필터 적용
+        const filtered = uniqueCourses.filter(item =>
+            item.courseName.toLowerCase().includes(val.toLowerCase())
+        );
+
+        setSuggestions(filtered);
+        setShowSuggestions(true);
+    }
+
+    const handleSelectSuggestion = (suggestedCourse) => {
+        setLocalCourseId(suggestedCourse.courseId);
+        setLocalCourseName(suggestedCourse.courseName);
+        setSuggestions([]);
+        setShowSuggestions(false);
+
+        onUpdate(index, "courseName", suggestedCourse.courseName);
+    }
 
     // 검색 업데이트 트리거
-    const handleTrigger = useCallback(() => {
+    const handleTrigger = useCallback((field) => {
         // 값이 바뀌었을 때만 업데이트 실행
-        if (localCourseId !== course.courseId) {
+        if (field === "courseId" && localCourseId !== course.courseId) {
             onUpdate(index, "courseId", localCourseId);
+        } else if (field === "courseName" && localCourseName !== course.courseName) {
+            onUpdate(index, "courseName", localCourseName);
         }
-    }, [localCourseId, course.courseId, index, onUpdate]);
+    }, [localCourseId, localCourseName, course.courseId, course.courseName, index, onUpdate]);
 
     const handleKeyDown = useCallback((e) => {
         if (e.key === 'Enter') {
-            e.preventDefault(); // 엔터 시 줄바꿈 등 방지
+            e.preventDefault();
             e.currentTarget.blur();
         }
     }, []);
@@ -40,16 +86,33 @@ const CourseEntity = React.memo(({ course, index, onUpdate, onDelete, grades }) 
                 <input className="dark-input" value={localCourseId} 
                     onChange={(e) => setLocalCourseId(e.target.value)} 
                     onKeyDown={handleKeyDown}
-                    onBlur={handleTrigger}
+                    onBlur={() => handleTrigger("courseId")}
                     placeholder="코드" 
                 />
             </div>
-            <div className="col-name">
-                <input className="dark-input" 
-                    value={course.courseName} readOnly
-                    onChange={(e) => onUpdate(index, "courseName", e.target.value)} 
+            <div className="col-name" style={{ position: 'relative' }}>
+                <input className="dark-input" value={localCourseName}
+                    onChange={handleNameChange}
+                    onKeyDown={handleKeyDown}
+                    onFocus={() => localCourseName && setShowSuggestions(true)}
+                    onBlur={() => {
+                        setTimeout(() => setShowSuggestions(false), 200);
+                        handleTrigger("courseName");
+                    }} 
                     placeholder="강의명" 
                 />
+                {showSuggestions && suggestions.length > 0 && (
+                    <ul className="suggestions-dropdown">
+                        {suggestions.map((item) => (
+                            <li key={item.courseId} 
+                                onMouseDown={() => handleSelectSuggestion(item)}
+                                className="suggestion-item"
+                            >
+                                <span className="suggestion-title">{item.courseName}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
             <div className="col-ctype">
                 <input className="dark-input"
@@ -71,9 +134,7 @@ const CourseEntity = React.memo(({ course, index, onUpdate, onDelete, grades }) 
                 </select>
             </div>
             <div className="col-del">
-                <button className="del-btn" onClick={() => onDelete(index)} title="delete">
-                    ×
-                </button>
+                <button className="del-btn br-10" onClick={() => onDelete(index)} title="delete">×</button>
             </div>
         </div>
     );
@@ -81,8 +142,9 @@ const CourseEntity = React.memo(({ course, index, onUpdate, onDelete, grades }) 
 
 // const CoursePopup: 팝업 본체
 const CoursePopup = ({ targetSem, onClose }) => {
-    const { user, userCourses, userSemesters, fetchCourseInfo, updateProfile, getAuthHeader, deleteCourse } = useUser();
+    const { user, userCourses, userSemesters, fetchCourseInfo, updateProfile, getAuthHeader, deleteCourse, } = useUser();
 
+    const [isSaving, setIsSaving] = useState(false);
     const [activeTaken, setActiveTaken] = useState(targetSem?.taken || "");
     const [inputYear, setInputYear] = useState(targetSem?.taken?.split('-')[0] || new Date().getFullYear());
     const [inputTerm, setInputTerm] = useState(targetSem?.taken?.split('-')[1] || (targetSem.isNonRegularTerm === 0 ? "1" : "S"));
@@ -97,81 +159,86 @@ const CoursePopup = ({ targetSem, onClose }) => {
     // handleUpdateRow 락
     const isUpdating = useRef(false);
 
-    // const handleUpdateRow: 개별 수강이력 업데이트 처리자 (courseId 자동 검색 포함)
+    const resetRow = (prev, index) => {
+        const next = [...prev];
+        next[index] = { ...next[index], courseId: "", courseName: "", category: "자선", credits: 3, retake: false, fromDB: false };
+        return next;
+    };
+
+    // const handleUpdateRow: 개별 수강이력 업데이트 처리자 (courseId, courseName 자동 검색 포함)
     const handleUpdateRow = useCallback(async (index, field, value) => {
-        // 락
         if (isUpdating.current) { return; }
-        // 락 활성화
         isUpdating.current = true;       
         // 동기 처리 (async 계열을 사용하지 않는 요소들)
-        if (field !== "courseId") {
+        if (field !== "courseId" && field !== "courseName") {
             setLocalCourses(prev => {
                 const next = [...prev];
                 next[index] = { ...next[index], [field]: value };
                 return next;
             });
-            // 예외 상황에서의 락 해제 (동기에서 멈추는 경우, try 밖이어서 finally 적용 X)
             isUpdating.current = false;
             return;
         }
-        // !courseId 변경하는 경우 초기화 수행. (비동기 검색 준비)
-        const trimCourseId = value.trim();
-        try {
-            if (!trimCourseId) {
-                setLocalCourses(prev => {
-                    const next = [...prev];
-                    next[index] = { ...next[index], courseId: "", courseName: "", credits: 0 };
-                    return next;
-                });
-                return;
-            }
-            // !중복 체크 
-            const isDup = localCourses.some((cs, idx) => idx !== index && cs.courseId === trimCourseId);
-            if (isDup) {
-                alert('학기 내 중복된 과목 코드입니다!');
-                return;
-            }
-            // !재수강 판단
-            const isRetake = userCourses.find(cs => cs.courseId === trimCourseId && cs.taken !== activeTaken);
-            let retakeFlag = false;
-            if (isRetake) {
-                if (window.confirm(`[${isRetake.courseName}] 수강 기록이 존재합니다. 이전 기록을 지우고 새로 등록하시겠습니까?`)) {
-                    retakeFlag = true;
-                    const targetDeleteId = isRetake.id;
-
-                    setDeleteCourseQueue(prev => prev.includes(targetDeleteId) ? prev : [...prev, targetDeleteId]);
-                } else {
-                    // 취소 시 init으로 돌림
-                    setLocalCourses(prev => {
-                        const next = [...prev];
-                        next[index] = {...next[index], courseId: "", courseName: "", retake: false };
-                        return next;
-                    });
-                    return;
-                }
-            }
-            // !비동기 처리 (fetchCourseInfo: DB 탐색, UserProvider.jsx에 정의.)
-            const found = await fetchCourseInfo(trimCourseId);
+        // !courseId/Name 변경하는 경우 초기화 수행. (비동기 검색 준비)
+        const trimValue = value.trim();
+        if (!trimValue) {
             setLocalCourses(prev => {
                 const next = [...prev];
-                // 자동 검색 부분 (!!isRetake 확인할 것)
-                if (found) {
-                    next[index] = { ...next[index], ...found, retake: retakeFlag, fromDB: true };
-                } else {
-                    // (검색실패시)
-                    next[index] = { ...next[index], courseId: trimCourseId, retake: retakeFlag, fromDB: false };
-                }
+                next[index] = { ...next[index], courseId: "", courseName: "", credits: 0 };
                 return next;
-            }); 
+            });
+            return;
+        }
+
+        try {
+            // 중복 체크 
+            const isDup = localCourses.some((cs, idx) => {
+                if (idx === index) { return false; }
+                return field === "courseId" ? cs.courseId === trimValue : cs.courseName === trimValue;
+            });
+            if (isDup) {
+                alert('학기 내 중복된 과목입니다!');
+                return;
+            }
+
+            const found = await fetchCourseInfo(trimValue);
+            if (found) {
+                const isRetake = userCourses.find(cs => cs.courseId === found.courseId && cs.taken !== activeTaken);
+                let retakeFlag = false;
+                if (isRetake) {
+                    if (window.confirm(`[${isRetake.courseName}] 수강 기록이 존재합니다. 이전 기록을 지우고 새로 등록하시겠습니까?`)) {
+                        retakeFlag = true;
+                        const targetDeleteId = isRetake.id;
+
+                        setDeleteCourseQueue(prev => prev.includes(targetDeleteId) ? prev : [...prev, targetDeleteId]);
+                    } else {
+                        // 취소 시 init으로 돌림
+                        setLocalCourses(prev => {
+                            const next = [...prev];
+                            next[index] = {...next[index], courseId: "", courseName: "", retake: false };
+                            return next;
+                        });
+                        return;
+                    }
+                }
+
+                setLocalCourses(prev => {
+                    const next = [...prev];
+                    next[index] = { ...next[index], ...found, retake: retakeFlag, fromDB: true };
+                    return next;
+                });
+            } else {
+                setLocalCourses(prev => resetRow(prev, index));
+            }
         } catch (error) {
             console.error("갱신오류: " , error);
+            setLocalCourses(prev => resetRow(prev, index));
         } finally {
-            // 락 해제.
             isUpdating.current = false;
         }
     }, [fetchCourseInfo, activeTaken, userCourses, localCourses, setDeleteCourseQueue]);
 
-    // const handleAddRow: 수강이력 추가 기능
+    // 수강이력 관련 기능
     const handleAddRow = () => {
         if (!activeTaken) {
             alert("학기 입력을 먼저 완료해주세요."); 
@@ -179,10 +246,10 @@ const CoursePopup = ({ targetSem, onClose }) => {
         }
         setLocalCourses([...localCourses, { 
             courseId: "", courseName: "", category: "자선", credits: 3, grade: "A+", 
-            taken: activeTaken, retake: false 
+            taken: activeTaken, retake: false, fromDB: false
         }]);
     };
-    // const handleDeleteRow: 수강이력 삭제 기능
+
     const handleDeleteRow = (index) => {
         setLocalCourses(prev => prev.filter((_, i) => i !== index));
     };
@@ -193,23 +260,19 @@ const CoursePopup = ({ targetSem, onClose }) => {
         const newSortKey = parseInt(inputYear) * 100 + termWeight[inputTerm];
 
         if (newTaken === activeTaken) return;
-        // !중복 체크
+        // 중복 체크
         const isDup = userSemesters.some(sem => sem.taken === newTaken && sem.id !== targetSem.id);
         if (isDup) {
             alert(`이미 [${newTaken}] 학기 정보가 존재합니다.`);
             return;
         }
-        // !시간 순서 체크
+        // 시간 순서 체크
         const isInvalid = userSemesters.some(sem => {
             if (sem.id === targetSem.id || sem.isNonRegularTerm !== targetSem.isNonRegularTerm) {
                 return false;
             }
-            if (targetSem.term > sem.term && newSortKey <= sem.sortKey) {
-                return true;
-            }
-            if (targetSem.term < sem.term && newSortKey >= sem.sortKey) {
-                return true;
-            }
+            if (targetSem.term > sem.term && newSortKey <= sem.sortKey) { return true; }
+            if (targetSem.term < sem.term && newSortKey >= sem.sortKey) { return true; }
 
             return false;
         })
@@ -225,8 +288,10 @@ const CoursePopup = ({ targetSem, onClose }) => {
 
     // 실제 저장 (+ 유효성 검사)
     const handleSave = async () => {
-        if (!activeTaken) return alert("학기 적용을 먼저 완료해주세요.");
-        if (!user) return alert("로그인 정보가 없습니다."); // 유저 검증 강화
+        // ! 새로 변경된 부분 (중복 저장 방지용)
+        if (isSaving) { return; }
+        if (!activeTaken) { return alert("학기 적용을 먼저 완료해주세요."); }
+        if (!user) { return alert("로그인 정보가 없습니다."); }
         
         // 유효성 검사 (순회식)
         for (let i = 0; i < localCourses.length; i++) {
@@ -237,7 +302,9 @@ const CoursePopup = ({ targetSem, onClose }) => {
         }
 
         try {
-            // Firebase로부터 최신 JWT 인증 헤더를 받아옵니다.
+            // ! 새로 변경된 부분
+            setIsSaving(true);
+
             const header = await getAuthHeader();
             if (!header.headers) {
                 return alert("인증 토큰을 가져오지 못했습니다. 다시 시도해 주세요.");
@@ -272,23 +339,22 @@ const CoursePopup = ({ targetSem, onClose }) => {
                 }))
             };
 
-            // !서버에 올리는 경우 IP값으로 변경해야함. (localhost:8080 부분)
             await axios.post(
-                `http://localhost:8080/api/users/${user.uid}/semesters/save-all`, 
+                `${BASE_URL}/users/${user.uid}/semesters/save-all`, 
                 payload, 
                 header
             );
-            
-            // 저장 직후 화면에 새 데이터를 즉시 동기화
+        
             await updateProfile({}); 
-
             alert("성공적으로 저장되었습니다.");
             onClose();
-
         } catch (error) {
             console.error("저장 실패:", error);
             const errorMsg = error.response?.data?.error || "백엔드 콘솔을 확인하세요.";
             alert(`저장 중 오류가 발생했습니다. (${errorMsg})`);
+        } finally {
+            // ! 새로 변경된 부분
+            setIsSaving(false);
         }
     }
     
@@ -330,7 +396,7 @@ const CoursePopup = ({ targetSem, onClose }) => {
                     </div>
                 </header>
 
-                <div className="modal-body">
+                <div className="modal-body dfx-col">
                     <div className="table-header">
                         <span className="col-cid">과목코드</span>
                         <span className="col-name">과목명</span>
@@ -341,7 +407,7 @@ const CoursePopup = ({ targetSem, onClose }) => {
                     </div>      
                     {localCourses.map((course, idx) => (
                         <CourseEntity 
-                            key={course.courseId || idx} // courseId가 없을 땐 idx를 키로 활용
+                            key={`course-row-${idx}`}
                             index={idx} 
                             course={course} 
                             onUpdate={handleUpdateRow} 
@@ -356,7 +422,7 @@ const CoursePopup = ({ targetSem, onClose }) => {
                 </div>
 
                 <footer className="modal-footer">
-                    <button className="save-btn" onClick={handleSave}>저장</button>
+                    <button className="save-btn br-10" onClick={handleSave}>저장</button>
                     <button className="cancel-btn" onClick={onClose}>취소</button>
                 </footer>
             </div>

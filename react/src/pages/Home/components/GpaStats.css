@@ -1,31 +1,25 @@
-/* !평점 << 이수학점 기준으로 디자인 작성해달라고 처리. */
+/* 1. 컨테이너 */
 .gpa {
-  display: flex;
   flex-direction: column;
-  
   width: 100%;
   min-height: 200px;
   margin: 10px auto;
   padding: 30px;
   box-sizing: border-box;
 }
+/* 1. */
 
+/* 2. 성적 요약부 */
 .gpa-summary {
-  display: flex;
-  flex-direction: row;
-
   width: 100%;
   min-height: 150px;
   margin: 10px auto;
-  
   justify-content: space-around;
   align-items: center;
 }
 
 .gpa-item {
-  display: flex;
   position: relative;
-  flex-direction: column;
   flex: 1;
   gap: 12px;
   align-items: center;
@@ -46,7 +40,6 @@
   font-weight: 700;
   background: rgba(0, 0, 0, 0.2);
   padding: 4px 14px;
-  border-radius: 20px;
 }
 
 .gpa-values {
@@ -67,23 +60,25 @@
   margin-left: 6px;
 }
 
-.gpa-progress-bg {
+.gpa-prog-bg {
   width: 80%;
   height: 8px;
   background: rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
   overflow: hidden;
 }
 
-.gpa-progress-fill {
+.gpa-prog-fill {
   height: 100%;
-  border-radius: 10px;
   transition: width 0.5s ease-out;
+}
+/* 2. */
+
+/* 3. 성적 확장부분(버튼)*/
+.gpa-btn-container {
+  padding: 20px 0;
 }
 
 .gpa-expanded-content {
-  display: flex;
-  flex-direction: column;
   width: 100%;
   align-items: center;
 }
@@ -91,12 +86,11 @@
 .gpa-toggle-btn {
   display: flex;
   align-items: center;
-  gap: 8px; /* 텍스트와 아이콘 사이 간격 */
+  gap: 8px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   padding: 8px 24px;
-  border-radius: 25px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.9rem;
@@ -114,48 +108,26 @@
 .caret-icon.rotate-180 {
   transform: rotate(180deg);
 }
+/* 3. */
 
-/* 리스트 스타일 */
-.semester-table-wrapper {
+/* 4. 차트와 테이블 */
+.expanded-wrapper,
+.semester-tbl-wrapper {
   width: 100%;
-  padding: 0 30px 30px 30px; /* 요약 영역과 여백 통일 */
   box-sizing: border-box;
   animation: fadeIn 0.3s ease-in-out;
 }
 
-/* 예외 처리부분 (성적 데이터 존재하지 않을 때) */
-.no-data-message {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 0;
-  color: rgba(255, 255, 255, 0.4);
-  gap: 15px;
+.semester-tbl-wrapper {
+  padding: 0 30px 30px 30px;
 }
 
-.no-data-message p {
-  margin: 0;
-  font-size: 0.95rem;
-}
-
-.expanded-wrapper {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  padding: 20px 30px 40px;
-  animation: fadeIn 0.4s ease-out;
-}
-
-.chart-container {
+.chart-ct {
   width: 100%;
   background: rgba(255, 255, 255, 0.03);
   padding: 20px;
   padding-bottom: 60px;
   margin-top: 10px;
-  border-radius: 15px;
   box-sizing: border-box;
 }
 
@@ -173,23 +145,22 @@
   font-size: 13px;
 }
 
-.semester-table {
+.semester-tbl {
   width: 100%;
   border-collapse: collapse;
   background: rgba(0, 0, 0, 0.15);
-  border-radius: 12px;
   overflow: hidden; /* 둥근 테두리 적용 */
   font-size: 0.95rem;
 }
 
-.semester-table th, 
-.semester-table td {
+.semester-tbl th, 
+.semester-tbl td {
   padding: 15px;
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.semester-table th {
+.semester-tbl th {
   background: rgba(255, 255, 255, 0.05);
   font-weight: 700;
   color: rgba(255, 255, 255, 0.7);
@@ -197,13 +168,13 @@
   text-transform: uppercase;
 }
 
-.semester-table tr:last-child td {
+.semester-tbl tr:last-child td {
   border-bottom: none;
 }
 
 .term-name {
   font-weight: 600;
-  color: #fff;
+  color: var(--text-bright);
   text-align: left;
   padding-left: 25px;
 }
@@ -212,19 +183,19 @@
   font-family: 'Monaco', 'Consolas', monospace;
   font-weight: 500;
 }
+/* 4. */
 
-/* 페이드인 */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* 5. 예외 처리부분 */
+.no-data-message {
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: rgba(255, 255, 255, 0.4);
+  gap: 15px;
 }
 
-/* 버튼 간격 조정 */
-.gpa-btn-container {
-  padding: 20px 0;
+.no-data-message p {
+  margin: 0;
+  font-size: 0.95rem;
 }
-
-/* 색상 테마 - 평점만의 색상 부여 */
-.bg-total { background-color: #f1c40f; } /* 연보라 */
-.bg-major { background-color: #74b9ff; } /* 연파랑 */
-.bg-else { background-color: #fab1a0; } /* 연주황 */
+/* 5. */

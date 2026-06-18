@@ -1,3 +1,4 @@
+/* 1. 컨테이너 */
 .reqm-container {
   width: 100%;
   margin: 10px auto;
@@ -13,38 +14,35 @@
   align-items: center;
   gap: 15px;
 }
+/* 1. */
 
+/* 2. 메인 태그 */
 .reqm-tags {
-  display: flex;
-  flex-direction: row; /* 가로 방향 배치 */
-  gap: 10px;           /* 태그 사이 간격 */
-  flex: 1;             /* 버튼을 제외한 남은 공간 전체 차지 */
+  gap: 10px;
+  flex: 1;
   width: 100%;
 }
 
-/* 요건 태그 스타일 */
 .reqm-tag {
-  flex: 1;             /* ★ 핵심: 남은 공간을 균등하게 나눠 가짐 (유동적 너비) */
+  flex: 1;
   min-width: 0;
-  
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  
-  padding: 12px 10px;  /* 상하 패딩을 늘려 크기를 키움 */
+  padding: 12px 10px;
   border-radius: 12px;
-  font-size: 0.95rem;  /* 글자 크기 약간 키움 */
+  font-size: 0.95rem;
   font-weight: 600;
   background: var(--inner-bg);
-
   transition: all 0.2s ease;
 }
 
 .reqm-tag.done { color: var(--color-done); border: 1px solid var(--color-done); }
 .reqm-tag.pending { color: rgba(255, 255, 255, 0.4); border: 1px solid var(--border-color); }
+/* 2. */
 
-/* 확장 리스트 스타일 */
+/* 3. 확장부 */
 .reqm-expanded-list {
   margin-top: 25px;
   padding: 10px;
@@ -82,7 +80,9 @@
   margin: 10px 0;
 }
 
-/* iOS 스타일 토글 스위치 */
+/* 3. */
+
+/* 4. 확장부 스위치 (더미?) */
 .switch {
   position: relative;
   display: inline-block;
@@ -113,3 +113,4 @@ input:checked + .slider { background-color: var(--color-done); }
 input:checked + .slider:before { transform: translateX(22px); }
 .slider.round { border-radius: 34px; }
 .slider.round:before { border-radius: 50%; }
+/* 4. */

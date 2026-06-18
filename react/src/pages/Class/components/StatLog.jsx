@@ -3,6 +3,7 @@ import useStats from "../../../components/useStats";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 import "./StatLog.css";
+import "../../../global.css";
 import "../Class.css";
 
 // 차트 각 조각 색상 (다크 테마 톤앤매너)
@@ -26,13 +27,12 @@ const StatLog = () => {
     const chartData = rawChartData.filter(item => item.value > 0);
 
     return (
-        <div className="border-r con-theme stat-ct">
-            {/* 1. 제목을 맨 위 중앙으로 배치 */}
+        <div className="br-20 con-theme stat-ct">
             <h3 className="stat-main-title">전체 성적 통계</h3>
             
             <div className="stat-grid">
                 {/* 2. [좌측] 세부 이수 학점 분포 차트 (크게 배치) */}
-                <div className="stat-chart-card">
+                <div className="stat-chart-card dfx-col">
                     <h4>세부 이수 학점 분포</h4>
                     {chartData.length > 0 ? (
                         <div className="chart-container">
@@ -40,7 +40,7 @@ const StatLog = () => {
                                 <PieChart>
                                     <Pie
                                         data={chartData}
-                                        cx="40%" // 차트 중심을 살짝 왼쪽으로 밀어 우측 범례 공간 확보
+                                        cx="40%"
                                         cy="50%"
                                         innerRadius={50}
                                         outerRadius={75}
@@ -77,7 +77,7 @@ const StatLog = () => {
                 </div>
 
                 {/* 3. [우측] 평점 및 학점 요약 텍스트 존 */}
-                <div className="stat-text-zone">
+                <div className="stat-text-zone dfx-col">
                     <div className="stat-card">
                         <h4>평점 요약</h4>
                         <p>전체: <strong>{generalStats.gpa.general}</strong></p>

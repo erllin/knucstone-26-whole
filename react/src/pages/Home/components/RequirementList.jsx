@@ -24,9 +24,9 @@ const RequirementList = () => {
   };
 
   return (
-    <section className="reqm-container con-theme border-r">
+    <section className="reqm-container con-theme br-20">
         <div className="reqm-header" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-            <div className="reqm-tags">
+            <div className="reqm-tags dfx-row">
                 {requirements.map(req => (
                 <div key={req.id} className={`reqm-tag ${req.isDone ? 'done' : 'pending'}`}>
                     <span className="tag-title">{req.title}</span>

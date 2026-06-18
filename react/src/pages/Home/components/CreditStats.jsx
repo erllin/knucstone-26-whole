@@ -1,8 +1,8 @@
 import { useUser } from "../../../components/UserProvider";
 import useStats from "../../../components/useStats";
 
-
 import "../Home.css";
+import "../../../global.css";
 import "./CreditStats.css";
 
 // const CreditEntity({title, current, total, colorClass}): (개별)이수학점 엔티티.
@@ -17,7 +17,7 @@ const CreditEntity = ({ title, current, total, colorClass }) => {
   const percentage = Math.min((current / total) * 100, 100);
 
   return (
-    <div className="credit-item">
+    <div className="credit-item dfx-col">
       <span className="cr-title">{title}</span>
       <div className="cr-values">
         <span className="cr-current">{current}</span>
@@ -25,9 +25,9 @@ const CreditEntity = ({ title, current, total, colorClass }) => {
         <span className="cr-total">{total}</span>
       </div>
       {/* 프로그레스 바 */}
-      <div className="cr-progress-bg">
+      <div className="cr-prog-bg">
         <div 
-          className={`cr-progress-fill ${colorClass}`} 
+          className={`cr-prog-fill br-20 ${colorClass}`} 
           style={{ width: `${percentage}%` }}
         ></div>
       </div>
@@ -44,16 +44,13 @@ const CreditStats = () => {
     const liberal = matchedDetail?.generalEducation;
   
     return (
-        <>          
-        {/* 메인>이수학점: 위의 CreditEntity 컴포넌트 참고, 임시로 값 넣음. (추후 JSON에 맞게 처리해야함.) */}
-        <section className="credit border-r con-theme">
-            <CreditEntity title="종합" current={generalStats.credit.general} total={reqCredits?.totalGraduationCredits || 0} colorClass="bg-main" />
-            <CreditEntity title="전필" current={generalStats.credit.mRequire} total={major?.required || 0} colorClass="bg-major" />
-            <CreditEntity title="전선" current={generalStats.credit.mElective} total={(major?.total - major?.required) || 0} colorClass="bg-major" />
-            <CreditEntity title="교양" current={generalStats.credit.liberal} total={liberal?.total || 0} colorClass="bg-lib" />
-            <CreditEntity title="자선" current={generalStats.credit.free} total={matchedDetail?.freeElective || 0} colorClass="bg-free" />
-        </section>
-        </>
+      <section className="credit dfx-row br-20 con-theme">
+          <CreditEntity title="종합" current={generalStats.credit.general} total={reqCredits?.totalGraduationCredits || 0} colorClass="bg-main" />
+          <CreditEntity title="전필" current={generalStats.credit.mRequire} total={major?.required || 0} colorClass="bg-major" />
+          <CreditEntity title="전선" current={generalStats.credit.mElective} total={(major?.total - major?.required) || 0} colorClass="bg-major" />
+          <CreditEntity title="교양" current={generalStats.credit.liberal} total={liberal?.total || 0} colorClass="bg-else" />
+          <CreditEntity title="자선" current={generalStats.credit.free} total={matchedDetail?.freeElective || 0} colorClass="bg-else" />
+      </section>
     );
 };
 

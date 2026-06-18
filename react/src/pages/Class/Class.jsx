@@ -4,6 +4,7 @@ import { useUser } from "../../components/UserProvider";
 // icon
 import "../../components/FontAwesome";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import "../../global.css";
 import "./Class.css"
 // components
 import CourseLog from "./components/CourseLog";
@@ -43,7 +44,7 @@ const Class = () => {
 
     // header, main-theme 등 일부 css는 Home.css에 위치함. 추후 분리예정.
     return (
-        <div className="page main-theme">
+        <div className="page dfx-col main-theme">
             <header className="header">
                 <div className="header-top">
                     <div className="ct-wrapper">
@@ -59,7 +60,6 @@ const Class = () => {
             <main className="ct">
                 <div className="ct-wrapper">
                     <StatLog />
-
                     <CourseLog onOpenModal={handleOpenModal}/>
                     
                     {isModalOpen && (

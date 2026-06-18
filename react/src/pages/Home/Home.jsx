@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import "../../components/FontAwesome";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import "./Home.css";
+import "../../global.css";
 // UserContext
 import { useUser } from "../../components/UserProvider";
-import { logout } from "../../firebase";
 // components
 import ProfilePopup from "./components/ProfilePopup";
 import CreditStats from "./components/CreditStats";
@@ -24,15 +24,6 @@ const Home = () => {
         return MAJOR_TYPES[value] || "미상";
     };
 
-    const handleLogout = async () => {
-      try {
-        await logout();
-        alert("로그아웃 성공");
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
     if (loading) {
       return <div className="loading">데이터를 불러오는 중입니다.</div>
     }
@@ -49,7 +40,7 @@ const Home = () => {
 
   // !google.ai 사용해서 트리 구조도 정리함. 주의요망.
   return (
-    <div className="page main-theme">
+    <div className="page dfx-col main-theme">
       {/* 헤더 부분: 로고/제목, 간단한 옵션, 학적 배치됨 */}
       <header className="header">
         <div className="header-top">
@@ -63,7 +54,7 @@ const Home = () => {
           </div>
         </div>
         {/* 헤더>학적: 사용자의 학적을 불러옴. (학교명, 학과, 입학년도, 전공유형) */}
-        <div className="profile border-r con-theme">
+        <div className="profile dfx-col br-20 con-theme">
             {/* 학적>수정버튼: 수정버튼. 누르면 팝업 나타나며, 객체 겹침으로 인해서 Propagation 적용함. ProfilePopup.jsx 참고. */}
             <button className="edit-btn" onClick={(e) => {e.stopPropagation(); setProfilePopupOpen(true)}}>
                 <FontAwesomeIcon icon="pen-to-square" />
@@ -71,7 +62,7 @@ const Home = () => {
             {/* 이하 학적 JSON에서 가져온 정보 표시됨. */}
             <div className="prof-univ">{profile.university}</div>
             <div className="prof-depart">{profile.department}</div>
-            <div className="prof-info">
+            <div className="prof-info dfx-row">
                 <span className="adm-year">{profile.admission}</span>
                 <span className="major-type">{switchMajorType(profile.majorType)}</span>
             </div>
@@ -79,17 +70,11 @@ const Home = () => {
       </header>
 
       {/* 메인 부분: 주요 요소의 컴포넌트 배치함. 오버플로-스크롤 처리해, 메인 내부에서 스크롤 되도록 하는게 목표. */}
-      <main className="ct border-r sub-theme">
-        <div className="ct-wrapper">
-          {/* 메인>평점: 임시 값 넣음. */}
+      <main className="ct dfx-col br-20 sub-theme">
+        <div className="ct-wrapper dfx-col">
           <GpaStats />
-
-          {/* 메인>이수학점: 임시로 값 넣음. */}
           <CreditStats />
-
-          {/* 메인>졸업요건: 이수학점 외 요건들의 상태 모아둘 곳, 버튼 두어서 아래로 확장할 수 있게 할 예정. (=요약/상세히) */}
           <RequirementList />
-
           <FrameworkViewer />
         </div>
       </main>

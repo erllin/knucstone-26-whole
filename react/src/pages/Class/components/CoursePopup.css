@@ -75,8 +75,6 @@
 }
 
 .modal-body {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
 }
 
@@ -99,13 +97,11 @@
   cursor: pointer;
 }
 
-/* 🌟 select 클릭 시 출력되는 옵션 리스트 배경색 방어 코드 */
 .dark-select option {
   background-color: var(--inner-bg);
   color: var(--text-bright);
 }
 
-/* 🌟 읽기 전용 상태일 때 시각적으로 구분이 가도록 다크 톤앤매너 유지보정 */
 .dark-input[readOnly] {
   background-color: rgba(0, 0, 0, 0.15);
   color: var(--text-bright);
@@ -116,7 +112,7 @@
 .apply-btn {
   padding: 8px 14px;
   background-color: var(--btn-acc);
-  color: #fff;
+  color: var(--text-bright);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -128,7 +124,7 @@
   background-color: var(--btn-acc-hv);
 }
 
-/* 과목 리스트 테이블 헤더 */
+
 .table-header {
   display: flex;
   gap: 10px;
@@ -138,9 +134,9 @@
   border-bottom: 1px solid var(--border-color);
   margin-top: 12px;
   text-align: center;
-  box-sizing: border-box; /* 너비 계산 꼬임 방지 */
+  box-sizing: border-box;
 }
-/* 개별 과목 엔티티 행 구조 */
+
 .course-row {
   display: flex;
   gap: 10px;
@@ -148,7 +144,7 @@
   align-items: center;
 }
 
-/* 과목 추가 버튼 */
+
 .add-btn {
   width: 100%;
   padding: 12px;
@@ -167,7 +163,7 @@
   color: var(--text-bright);
 }
 
-/* 하단 버튼 영역 */
+
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -179,10 +175,9 @@
 
 .save-btn {
   background-color: var(--btn-acc);
-  color: white;
+  color: var(--text-bright);
   border: none;
   padding: 10px 20px;
-  border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s;
@@ -210,7 +205,6 @@
   background-color: var(--danger);
   color: var(--text-pure);
   border: none;
-  border-radius: 8px;
   width: 35px;
   height: 35px;
   cursor: pointer;
@@ -242,7 +236,45 @@
   box-sizing: border-box;
 }
 
-/* 스핀 버튼 제거 (원본 유지) */
+/* !-- 연관검색어를 위해 생성한 css */
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  width: 100%; 
+  background: #222;
+  border: 1px solid #444;
+  list-style: none; 
+  padding: 0;
+  margin: 0; 
+  max-height: 200px; 
+  overflow-y: auto;
+
+}
+
+.suggestion-item {
+    padding: 6px 12px;
+    cursor: pointer;
+    color: #fff;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+.suggestion-title {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.suggestion-item:hover {
+    background-color: #333;
+}
+
+/* !-- */
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;

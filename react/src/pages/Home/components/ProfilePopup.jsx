@@ -6,6 +6,7 @@ import { useUser } from "../../../components/UserProvider";
 import "../../../components/FontAwesome";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import "../Home.css";
+import "../../../global.css";
 import "./ProfilePopup.css";
 
 // 폼 에러메세지, 규약
@@ -52,7 +53,7 @@ const ProfilePopup = ({ onClose }) => {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content main-theme border-r" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content main-theme br-20" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h3>프로필 수정</h3>
                     <button className="close-btn" onClick={onClose}>
@@ -60,7 +61,7 @@ const ProfilePopup = ({ onClose }) => {
                     </button>
                 </div>
 
-                <form className="modal-form" onSubmit={handleSubmit(onSubmit)}>
+                <form className="modal-form dfx-col" onSubmit={handleSubmit(onSubmit)}>
                     <label>대학명</label>
                     <input 
                         {...register("university", VALIDATION_RULES.university)} 
@@ -96,7 +97,7 @@ const ProfilePopup = ({ onClose }) => {
                         </div>
                     </div>
                     
-                    <button type="submit" className="save-btn">저장하기</button>
+                    <button type="submit" className="save-btn br-10">저장하기</button>
                 </form>
             </div>
         </div>

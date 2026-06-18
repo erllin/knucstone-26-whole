@@ -13,62 +13,8 @@
       .modal-...: 각종 모달 레이아웃 속성.
 */
 
-
-
-/* 페이지 */
-.page {
-  display: flex;
-  flex-direction: column;
-
-  height: 100vh;
-  width: 100%;
-  max-width: 1128px;
-  margin: 0 auto;
-
-  align-items: center;
-  text-align: center;
-  overflow: hidden;
-}
-
-/* 헤더 부분 */
-.header {
-  display: flex;
-  flex-direction: column;
-
-  width: 100%;
-  padding: 20px 0;
-
-  align-items: center;
-}
-
-.header-top {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.header-top .ct-wrapper {
-  display: flex;
-  flex-direction: row;
-  padding: 0 40px;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-
-.menu {
-  display: flex;
-  gap: 20px;
-}
-
-.profile {  
-  display: flex;
-  flex-direction: column;
+.profile {
   position: relative;
-
   width: 70%;
   min-height: 150px;
   margin: 20px auto;
@@ -125,10 +71,7 @@
 
 /* 입학년도 + 전공유형 */
 .prof-info {
-  display: flex;
-  flex-direction: row;
   width: 100%;
-
   padding-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.2); /* 가로 구분선 */
   justify-content: space-between; /* 양 끝단에 요소 정렬 */
@@ -136,51 +79,6 @@
 
 .adm-year, .major-type {
   font-size: 0.9rem;
-}
-
-/* 메인 부분 */
-.ct {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  width: 100%;
-
-  padding-top: 40px;
-  padding-bottom: 40px;
-  overflow-y: auto; /* 원래 overflow: scroll 이었음. */
-}
-
-/* !크롬 전용으로, 스크롤바를 보이지 않게 함. 다른 브라우저 쓰는 경우, 다른 속성 추가해야 할 수도 있음. */
-.ct::-webkit-scrollbar {
-  display: none;
-}
-
-.ct-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 80%;
-  margin: 0 auto;
-  gap: 20px;
-}
-
-/* !유틸리티(임시) */
-.border-r {
-  border-radius: 20px;
-}
-
-.main-theme {
-  background-color: var(--main-theme); /* Deep Charcoal */
-  color: var(--text-white);
-}
-
-.sub-theme {
-  background: linear-gradient(to bottom, var(--sub-theme), var(--main-theme)); /* 그라데이션 Charcoal */
-  color: var(--text-pure);
-}
-
-.con-theme {
-  background-color: var(--con-theme); /* Light Charcoal */
-  color: var(--text-soft);
 }
 
 

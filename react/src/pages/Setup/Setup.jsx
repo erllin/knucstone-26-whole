@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../components/UserProvider";
 
-import "./Setup.css"
+import "./Setup.css";
+import "../../global.css";
 
 function Setup() {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ function Setup() {
 
   return (
     <div className="setup-wrapper page">
-      <div className="setup-container framework con-theme border-r">
+      <div className="setup-container framework con-theme br-20">
         {!user ? (
           /* 구글 로그인 단계 */
           <div className="login-step">
@@ -96,14 +97,12 @@ function Setup() {
 
             <div className="setup-row">
               {/* 학번 선택 */}
-              <div className="fr-title border-r fr-title-select">
+              <div className="fr-title br-20 fr-title-select">
                 <select 
                   value={formData.admission}
                   onChange={e => setFormData({...formData, admission: Number(e.target.value)})}
                 >
                   <option value="2026">2026학번</option>
-                  <option value="2025">2025학번</option>
-                  <option value="2024">2024학번</option>
                 </select>
               </div>
 

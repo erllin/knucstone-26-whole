@@ -1,33 +1,21 @@
-/* 레이아웃 대장 컨테이너 (.analize-course 계승) */
-/* 메인 외부 래퍼 레이아웃 */
 .analize-course {
-  display: flex;
-  flex-direction: column;
   padding: 24px;
   background-color: var(--con-theme);
   border: 1px solid var(--border-color);
   gap: 20px;
 }
 
-/* 내부 레이아웃 수직 흐름 정의 */
 .analize-content {
-  display: flex;
-  flex-direction: column;
   gap: 32px;
 }
 
-/* 개별 카드 구역 스타일 가이드 */
 .analize-section {
   background: var(--inner-bg);
   padding: 20px;
-  border-radius: 12px;
   border: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
   gap: 16px;
 }
 
-/* 대제목 및 소제목 텍스트 타이포그래피 */
 .sub-section-title {
   margin: 0;
   padding-bottom: 10px;
@@ -43,11 +31,9 @@
   font-size: 0.95rem;
 }
 
-/* 🌟 [복구] 분석 실행 컨테이너 및 버튼 인터랙션 스타일링 */
 .suggestion-container {
   background: var(--inner-bg);
   padding: 16px 20px;
-  border-radius: 12px;
   border: 1px solid var(--border-color);
 }
 
@@ -70,7 +56,6 @@
   font-size: 0.9rem;
   font-weight: bold;
   padding: 10px 22px;
-  border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
   transition: transform 0.2s, background-color 0.2s;
@@ -88,19 +73,15 @@
   transform: none;
 }
 
-/* 1. 추천 트랙 가로 정렬 컴포넌트 */
 .track-item {
   display: flex;
   align-items: center;
   gap: 12px;
   background: var(--card-bg);
   padding: 12px 16px;
-  border-radius: 8px;
 }
 
 .track-info {
-  display: flex;
-  flex-direction: column;
   gap: 4px;
 }
 
@@ -122,7 +103,6 @@
   font-size: 0.75rem;
   font-weight: bold;
   padding: 4px 8px;
-  border-radius: 4px;
   white-space: nowrap;
 }
 .tag-rec {
@@ -131,7 +111,7 @@
 }
 .tag-sub {
   background: #6c757d;
-  color: #fff;
+  color: var(--text-bright);
 }
 
 /* 추천 교과목 상세 스택 아이템 */
@@ -147,7 +127,6 @@
   gap: 12px;
   background: var(--card-bg);
   padding: 14px;
-  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.02);
 }
 
@@ -197,16 +176,14 @@
 }
 
 .learningsolution-list.solution li {
-  color: var(--text-blue);
-  font-weight: 600;
+  color: var(--text-bright);
+  font-weight: 500;
 }
 
-/* 에러 안내창 레이어 */
 .analize-error {
   padding: 14px;
   background-color: rgba(220, 53, 69, 0.15);
   border: 1px solid var(--error);
   color: var(--text-error);
-  border-radius: 8px;
   font-size: 0.9rem;
 }

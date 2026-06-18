@@ -3,6 +3,7 @@ import React, { useState, useMemo } from "react";
 import "../../../components/FontAwesome";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import "../Class.css";
+import "../../../global.css"
 import "./CourseLog.css";
 // Course Context
 import useStats from "../../../components/useStats";
@@ -46,8 +47,8 @@ const SemesterEntity = ({ sem, onOpenModal }) => {
     }, [userCourses, sem.taken]);
 
     return (
-        <div className="sem-item">
-            <div className="semit-summary">
+        <div className="sem-item dfx-col br-15">
+            <div className="semit-summary dfx-row">
                 <div className="semit-title">{semesterTitle}</div>
                 <div className="semit-sum">
                     {/* 수강이력과 성적에 따라서 개별로 변하게끔 할 계획 (요약부) */}
@@ -64,8 +65,8 @@ const SemesterEntity = ({ sem, onOpenModal }) => {
                 </div>
             </div>
             {isOpen && (
-                <div className="semit-expanded-content">
-                    <div className="semit-exp-header">
+                <div className="semit-exp-content dfx-col br-10">
+                    <div className="semit-exp-header dfx-row">
                         <span>{sem.taken}</span>                        
                         <div className="semit-edit-btn" 
                             onClick={(e) => {
@@ -177,11 +178,11 @@ const CourseLog = ({ onOpenModal }) => {
     return (
         <>
         {/* 이수이력을 학기별로 분리 배치하는 곳 (실증용) */}
-        <section className="cls-history border-r con-theme">
-            <div className="ct-sem regular-sem">
-                <div className="sem-header">
-                    <span className="sem-title">정규학기</span>
-                    <div className="sem-btn">
+        <section className="cls-history dfx-col br-20 con-theme">
+            <div className="ct-sem dfx-col regular-sem">
+                <div className="sem-header dfx-row">
+                    <span className="sem-title br-20">정규학기</span>
+                    <div className="sem-btn dfx-row">
                         <div className="del-sem-btn" onClick={() => handleDeleteSemester(0)}>
                             <FontAwesomeIcon icon="square-minus" />
                         </div>
@@ -190,14 +191,14 @@ const CourseLog = ({ onOpenModal }) => {
                         </div>
                     </div>
                 </div>
-                <div className="sem-container">
+                <div className="sem-container dfx-col">
                     {renderSemesterList(userSemesters, 0)}
                 </div>
             </div>
-            <div className="ct-sem seasonal-sem">
-                <div className="sem-header">
-                    <span className="sem-title">계절학기</span>
-                    <div className="sem-btn">
+            <div className="ct-sem dfx-col seasonal-sem">
+                <div className="sem-header dfx-row">
+                    <span className="sem-title br-20">계절학기</span>
+                    <div className="sem-btn dfx-row">
                         <div className="del-sem-btn" onClick={() => handleDeleteSemester(1)}>
                             <FontAwesomeIcon icon="square-minus" />
                         </div>
@@ -206,7 +207,7 @@ const CourseLog = ({ onOpenModal }) => {
                         </div>
                     </div>
                 </div>
-                <div className="sem-container">
+                <div className="sem-container dfx-col">
                     {renderSemesterList(userSemesters, 1)}
                 </div>
             </div>
